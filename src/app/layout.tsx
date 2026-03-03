@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'NEXUS | Elite Software Engineering & QA Agency',
+  title: 'Valsys | Hyper-Kinetic Engineering',
   description:
-    'We build flawless, AI-powered web applications with rigorous QA automation. Full-stack development, AI integration, and quality assurance for the most demanding teams.',
+    'We build flawless software. Elite engineering for the next generation of digital products. Full-stack, AI, and platform infrastructure.',
   icons: {
     icon: [
       {

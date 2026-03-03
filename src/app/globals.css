@@ -168,3 +168,231 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #2a2a2e;
 }
+
+/* ========== Sovan Landing (from vanilla HTML) ========== */
+:root {
+  --cursor-size: 20px;
+  --cursor-trail-size: 40px;
+  --primary-cyan: #22d3ee;
+  --primary-purple: #a855f7;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #030303;
+  color: #ffffff;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* --- Custom Cursor --- */
+#cursor-dot,
+#cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+}
+
+#cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+#cursor-trail {
+  width: var(--cursor-trail-size);
+  height: var(--cursor-trail-size);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+body.hover-active #cursor-trail {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(34, 211, 238, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+body.hover-active #cursor-dot {
+  opacity: 0;
+}
+
+/* --- Page Entrance Glitch --- */
+@keyframes glitch-intro {
+  0% { transform: skewX(80deg); opacity: 0; filter: blur(10px); }
+  20% { transform: skewX(-20deg); opacity: 0.5; }
+  40% { transform: skewX(10deg); opacity: 0.8; }
+  60% { transform: skewX(-5deg); opacity: 1; }
+  80% { transform: skewX(2deg); }
+  100% { transform: skewX(0); opacity: 1; filter: blur(0); }
+}
+
+.glitch-enter {
+  animation: glitch-intro 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transform-origin: center;
+}
+
+/* --- Liquid Text --- */
+.liquid-text {
+  background: linear-gradient(
+    90deg,
+    #22d3ee 0%,
+    #a855f7 25%,
+    #3b82f6 50%,
+    #22d3ee 75%,
+    #a855f7 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: liquid-flow 4s linear infinite;
+}
+
+@keyframes liquid-flow {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* --- Magnetic Button Ripple --- */
+.btn-magnetic {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-ripple span {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border-radius: 50%;
+  animation: ripple 0.8s linear infinite;
+}
+
+@keyframes ripple {
+  0% { width: 0; height: 0; opacity: 0.5; }
+  100% { width: 500px; height: 500px; opacity: 0; }
+}
+
+/* --- Holographic Cards --- */
+.holo-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.holo-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(var(--angle, 0deg), transparent 40%, #22d3ee, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.holo-card:hover::after {
+  opacity: 1;
+}
+
+.holo-content {
+  transform: translateZ(30px);
+}
+
+.holo-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.holo-card:hover .holo-glare {
+  opacity: 1;
+}
+
+/* --- Kinetic Scroll Spring Physics --- */
+.spring-up {
+  opacity: 0;
+  transform: translateY(100px);
+  transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.spring-up.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Marquee --- */
+.marquee-wrapper {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: scroll-marquee 20s linear infinite;
+}
+.marquee-wrapper:hover .marquee-track {
+  animation-duration: 10s;
+}
+@keyframes scroll-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* --- Canvas Background --- */
+canvas#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+#smooth-content {
+  transform-origin: center top;
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* --- Project Card Specifics --- */
+.project-card-img {
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.holo-card:hover .project-card-img {
+  transform: scale(1.05);
+}
+
+/* Form Inputs */
+.mag-input {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+.mag-input:focus {
+  background: rgba(255,255,255,0.05);
+  border-color: #22d3ee;
+  outline: none;
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
+}
