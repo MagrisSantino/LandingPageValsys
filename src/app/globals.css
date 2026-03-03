@@ -342,21 +342,25 @@ body.hover-active #cursor-dot {
   transform: translateY(0);
 }
 
-/* --- Marquee --- */
+/* --- Marquee (bucle infinito, sin pausa al hover) --- */
 .marquee-wrapper {
-  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: scroll-marquee 20s linear infinite;
+  will-change: transform;
+  animation: scroll-marquee 30s linear infinite;
+  animation-play-state: running;
 }
-.marquee-wrapper:hover .marquee-track {
-  animation-duration: 10s;
+.marquee-group {
+  display: flex;
+  align-items: center;
 }
 @keyframes scroll-marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-25%, 0, 0); }
 }
 
 /* --- Canvas Background --- */

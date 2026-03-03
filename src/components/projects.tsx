@@ -3,6 +3,7 @@
 
 import { useRef, useState, useCallback } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { ArrowUpRight, ExternalLink } from "lucide-react"
 import {
   motion,
@@ -16,42 +17,40 @@ import {
 const spring = { type: "spring" as const, stiffness: 150, damping: 15, mass: 0.5 }
 const springSnappy = { type: "spring" as const, stiffness: 300, damping: 25, mass: 0.5 }
 
+const DEMO_BASE = "https://valsysdemo.vercel.app"
+
 const projects = [
   {
-    title: "Apex Finance",
-    category: "Fintech Platform",
+    title: "Aegis",
+    category: "Healthcare OS",
     description:
-      "Real-time trading dashboard with sub-100ms latency. Built with Next.js, WebSockets, and a custom charting engine processing 2M+ data points per second.",
-    image: "/images/project-1.jpg",
-    tags: ["Next.js", "WebSocket", "PostgreSQL"],
-    stats: { metric: "2M+", label: "Data points/sec" },
+      "A streamlined operations platform for medical professionals. Engineered to optimize scheduling, patient flow, and resource allocation with absolute reliability.",
+    image: "/images/project-1.png",
+    url: `${DEMO_BASE}/aegis`,
   },
   {
-    title: "MedVault AI",
-    category: "Healthcare / AI",
+    title: "Kinetix",
+    category: "Academy Management",
     description:
-      "HIPAA-compliant AI diagnostic assistant with natural language processing for medical records. Reduced diagnosis time by 60% across 50+ clinics.",
-    image: "/images/project-2.jpg",
-    tags: ["Python", "LLM", "HIPAA"],
-    stats: { metric: "60%", label: "Faster diagnosis" },
+      "A comprehensive management ecosystem for academies. It unifies attendance tracking, seamless payments, and resource coordination into one fluid digital experience.",
+    image: "/images/project-2.png",
+    url: `${DEMO_BASE}/kinetix`,
   },
   {
-    title: "Luxe Commerce",
-    category: "E-Commerce",
+    title: "NovaPay",
+    category: "Fintech & Trading",
     description:
-      "High-performance headless commerce platform serving 500K+ daily active users with 99.99% uptime. AI-powered recommendation engine driving 35% revenue uplift.",
-    image: "/images/project-3.jpg",
-    tags: ["React", "GraphQL", "AWS"],
-    stats: { metric: "99.99%", label: "Uptime" },
+      "A high-frequency trading and financial dashboard. Designed for ultra-low latency, delivering real-time market data through a stunning, minimalist interface.",
+    image: "/images/project-3.png",
+    url: `${DEMO_BASE}/novapay`,
   },
   {
-    title: "Sentinel Analytics",
-    category: "SaaS / Analytics",
+    title: "OmniStock",
+    category: "Supply Chain",
     description:
-      "Enterprise-grade analytics platform with real-time dashboards, anomaly detection, and automated reporting for Fortune 500 clients.",
-    image: "/images/project-4.jpg",
-    tags: ["TypeScript", "Kafka", "ML"],
-    stats: { metric: "500+", label: "Enterprise clients" },
+      "An intelligent inventory management system. Built to handle complex logistics with real-time stock tracking and elegant, data-driven dashboards.",
+    image: "/images/project-4.png",
+    url: `${DEMO_BASE}/omnistock`,
   },
 ]
 
@@ -108,6 +107,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={onLeave}
       >
+        <Link href={project.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10 block" aria-label={`Ver demo de ${project.title}`} />
         {/* Vibrant gradient border on hover */}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-400"
@@ -181,45 +181,22 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
 
           {/* Content -- flex-1 pushes footer down for equal height */}
           <div className="flex flex-1 flex-col p-6">
-            <div className="mb-3 flex items-start justify-between">
-              <h3 className="text-xl font-bold text-foreground group-hover:text-primary">
-                {project.title}
-              </h3>
-              <div className="text-right">
-                <motion.div
-                  className="font-mono text-lg font-bold text-primary gpu"
-                  initial={{ opacity: 0, scale: 0.6 }}
-                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                  transition={{ delay: index * 0.15 + 0.4, ...springSnappy }}
-                >
-                  {project.stats.metric}
-                </motion.div>
-                <div className="text-[10px] tracking-wider text-muted-foreground uppercase">
-                  {project.stats.label}
-                </div>
-              </div>
-            </div>
+            <h3 className="mb-3 text-xl font-bold text-foreground group-hover:text-primary">
+              {project.title}
+            </h3>
 
             <p className="mb-4 flex-1 text-sm leading-relaxed text-muted-foreground">
               {project.description}
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md border border-border bg-secondary px-2.5 py-1 font-mono text-xs text-muted-foreground group-hover:border-primary/15"
-                >
-                  {tag}
-                </span>
-              ))}
               <motion.span
-                className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-primary gpu"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary gpu"
                 initial={{ opacity: 0, x: -8 }}
                 animate={hovered ? { opacity: 1, x: 0 } : { opacity: 0, x: -8 }}
                 transition={springSnappy}
               >
-                View case study <ExternalLink className="h-3 w-3" />
+                View <ExternalLink className="h-3 w-3" />
               </motion.span>
             </div>
           </div>

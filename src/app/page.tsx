@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Fragment } from "react";
 import Script from "next/script";
 import {
   Clock,
@@ -10,6 +10,7 @@ import {
   Send,
 } from "lucide-react";
 import { Dock } from "@/components/dock";
+import { Projects } from "@/components/projects";
 
 export default function Home() {
   useEffect(() => {
@@ -387,36 +388,25 @@ export default function Home() {
           <div className="py-12 border-y border-white/5 bg-black/50 backdrop-blur-sm relative z-20 overflow-hidden">
             <div className="marquee-wrapper w-full">
               <div className="marquee-track gap-16 md:gap-32 px-4">
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:atom-linear" width="24" /> <span className="text-xl font-bold tracking-tight">AXIOM</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:infinite-linear" width="24" /> <span className="text-xl font-bold tracking-tight">VERIDA</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:black-hole-linear" width="24" /> <span className="text-xl font-bold tracking-tight">ORBITRA</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:ufo-linear" width="24" /> <span className="text-xl font-bold tracking-tight">NOVA</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:planet-linear" width="24" /> <span className="text-xl font-bold tracking-tight">COSMOS</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:atom-linear" width="24" /> <span className="text-xl font-bold tracking-tight">AXIOM</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:infinite-linear" width="24" /> <span className="text-xl font-bold tracking-tight">VERIDA</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:black-hole-linear" width="24" /> <span className="text-xl font-bold tracking-tight">ORBITRA</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:ufo-linear" width="24" /> <span className="text-xl font-bold tracking-tight">NOVA</span>
-                </div>
-                <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none">
-                  <iconify-icon icon="solar:planet-linear" width="24" /> <span className="text-xl font-bold tracking-tight">COSMOS</span>
-                </div>
+                {[1, 2, 3, 4].map((n) => (
+                  <Fragment key={n}>
+                    <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none shrink-0">
+                      <iconify-icon icon="solar:atom-linear" width="24" /> <span className="text-xl font-bold tracking-tight">AXIOM</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none shrink-0">
+                      <iconify-icon icon="solar:infinite-linear" width="24" /> <span className="text-xl font-bold tracking-tight">VERIDA</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none shrink-0">
+                      <iconify-icon icon="solar:black-hole-linear" width="24" /> <span className="text-xl font-bold tracking-tight">ORBITRA</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none shrink-0">
+                      <iconify-icon icon="solar:ufo-linear" width="24" /> <span className="text-xl font-bold tracking-tight">NOVA</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-none shrink-0">
+                      <iconify-icon icon="solar:planet-linear" width="24" /> <span className="text-xl font-bold tracking-tight">COSMOS</span>
+                    </div>
+                  </Fragment>
+                ))}
               </div>
             </div>
           </div>
@@ -528,170 +518,7 @@ export default function Home() {
             </div>
           </section>
 
-          <section id="work" className="relative z-10 py-32 px-4 md:px-8 border-t border-white/5">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 spring-up">
-                <div>
-                  <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4 block">Featured Work</span>
-                  <h2 className="text-4xl md:text-6xl font-semibold tracking-tighter text-white">
-                    Projects that <span className="text-neutral-500">define industries.</span>
-                  </h2>
-                </div>
-                <a
-                  href="#"
-                  className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white hover:text-cyan-400 transition-colors mt-8 md:mt-0"
-                >
-                  View all projects <ArrowUpRight className="w-4 h-4" />
-                </a>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div
-                  className="group relative aspect-[4/3] rounded-3xl overflow-hidden holo-card magnetic-target spring-up cursor-pointer"
-                  data-strength="15"
-                >
-                  <div className="absolute inset-0 bg-neutral-900">
-                    <img
-                      src="https://images.unsplash.com/photo-1642543492481-44e81e3914a7?q=80&w=2000&auto=format&fit=crop"
-                      alt="Finance Dashboard"
-                      className="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-105 group-hover:opacity-80 transition-all duration-700 ease-out project-card-img"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="holo-glare" />
-                  <div className="absolute inset-0 p-8 flex flex-col justify-between holo-content z-20">
-                    <div className="flex justify-between items-start">
-                      <span className="px-3 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-[10px] uppercase tracking-wider text-white">Fintech Platform</span>
-                    </div>
-                    <div>
-                      <div className="flex items-end justify-between mb-2">
-                        <h3 className="text-2xl font-semibold text-white">Apex Finance</h3>
-                        <div className="text-right">
-                          <div className="text-cyan-400 font-bold text-xl tracking-tight">2M+</div>
-                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Data Points/Sec</div>
-                        </div>
-                      </div>
-                      <p className="text-neutral-400 text-sm mb-6 line-clamp-2">
-                        Real-time trading dashboard with sub-100ms latency. Built with Next.js, WebSockets, and a custom charting engine.
-                      </p>
-                      <div className="flex gap-2">
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">Next.js</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">WebSockets</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">PostgreSQL</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="group relative aspect-[4/3] rounded-3xl overflow-hidden holo-card magnetic-target spring-up cursor-pointer"
-                  data-strength="15"
-                >
-                  <div className="absolute inset-0 bg-neutral-900">
-                    <img
-                      src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop"
-                      alt="Medical AI"
-                      className="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-105 group-hover:opacity-80 transition-all duration-700 ease-out project-card-img"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="holo-glare" />
-                  <div className="absolute inset-0 p-8 flex flex-col justify-between holo-content z-20">
-                    <div className="flex justify-between items-start">
-                      <span className="px-3 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-[10px] uppercase tracking-wider text-white">Healthcare / AI</span>
-                    </div>
-                    <div>
-                      <div className="flex items-end justify-between mb-2">
-                        <h3 className="text-2xl font-semibold text-white">MedVault AI</h3>
-                        <div className="text-right">
-                          <div className="text-cyan-400 font-bold text-xl tracking-tight">60%</div>
-                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Faster Diagnosis</div>
-                        </div>
-                      </div>
-                      <p className="text-neutral-400 text-sm mb-6 line-clamp-2">
-                        HIPAA-compliant AI diagnostic assistant with natural language processing for medical records.
-                      </p>
-                      <div className="flex gap-2">
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">Python</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">LLM</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">HIPAA</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="group relative aspect-[4/3] rounded-3xl overflow-hidden holo-card magnetic-target spring-up cursor-pointer"
-                  data-strength="15"
-                >
-                  <div className="absolute inset-0 bg-neutral-900">
-                    <img
-                      src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000&auto=format&fit=crop"
-                      alt="Fashion Ecommerce"
-                      className="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-105 group-hover:opacity-80 transition-all duration-700 ease-out project-card-img"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="holo-glare" />
-                  <div className="absolute inset-0 p-8 flex flex-col justify-between holo-content z-20">
-                    <div className="flex justify-between items-start">
-                      <span className="px-3 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-[10px] uppercase tracking-wider text-white">E-Commerce</span>
-                    </div>
-                    <div>
-                      <div className="flex items-end justify-between mb-2">
-                        <h3 className="text-2xl font-semibold text-white">Luxe Commerce</h3>
-                        <div className="text-right">
-                          <div className="text-cyan-400 font-bold text-xl tracking-tight">99.99%</div>
-                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Uptime</div>
-                        </div>
-                      </div>
-                      <p className="text-neutral-400 text-sm mb-6 line-clamp-2">
-                        High-performance headless commerce platform serving 500K+ daily active users with AI-powered recommendations.
-                      </p>
-                      <div className="flex gap-2">
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">React</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">GraphQL</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">AWS</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className="group relative aspect-[4/3] rounded-3xl overflow-hidden holo-card magnetic-target spring-up cursor-pointer"
-                  data-strength="15"
-                >
-                  <div className="absolute inset-0 bg-neutral-900">
-                    <img
-                      src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop"
-                      alt="Analytics Dashboard"
-                      className="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:scale-105 group-hover:opacity-80 transition-all duration-700 ease-out project-card-img"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                  <div className="holo-glare" />
-                  <div className="absolute inset-0 p-8 flex flex-col justify-between holo-content z-20">
-                    <div className="flex justify-between items-start">
-                      <span className="px-3 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md text-[10px] uppercase tracking-wider text-white">SaaS / Analytics</span>
-                    </div>
-                    <div>
-                      <div className="flex items-end justify-between mb-2">
-                        <h3 className="text-2xl font-semibold text-white">Sentinel Analytics</h3>
-                        <div className="text-right">
-                          <div className="text-cyan-400 font-bold text-xl tracking-tight">500+</div>
-                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Enterprise Clients</div>
-                        </div>
-                      </div>
-                      <p className="text-neutral-400 text-sm mb-6 line-clamp-2">
-                        Enterprise-grade analytics platform with real-time dashboards, anomaly detection, and automated reporting.
-                      </p>
-                      <div className="flex gap-2">
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">TypeScript</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">Kafka</span>
-                        <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] text-neutral-400">ML</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <Projects />
 
           <section id="contact" className="relative z-10 py-32 px-4 md:px-8 border-t border-white/5 bg-gradient-to-b from-black to-neutral-950">
             <div className="max-w-7xl mx-auto">
@@ -774,13 +601,11 @@ export default function Home() {
                 <div className="w-4 h-4 bg-white rounded-full" />
                 <span className="text-white font-bold tracking-tight">VALSYS</span>
               </div>
-              <div className="flex gap-8 text-xs font-medium uppercase tracking-widest text-neutral-500">
+              <div className="flex items-center gap-8 text-xs font-medium uppercase tracking-widest text-neutral-500 md:ml-auto md:pr-0">
                 <a href="#" className="hover:text-white transition-colors">Privacy</a>
                 <a href="#" className="hover:text-white transition-colors">Terms</a>
-                <a href="#" className="hover:text-white transition-colors">Twitter</a>
-                <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
+                <span className="text-neutral-600 normal-case tracking-normal">© 2026 VALSYS ENGINEERING</span>
               </div>
-              <div className="text-neutral-600 text-xs">© 2024 VALSYS ENGINEERING</div>
             </div>
           </footer>
         </div>

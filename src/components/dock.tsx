@@ -76,10 +76,10 @@ function UpworkIcon({ className }: { className?: string }) {
 /*  Dock items config                                         */
 /* ---------------------------------------------------------- */
 const dockItems = [
-  { label: "TikTok", href: "#", icon: TikTokIcon, color: "#e8eaed" },
+  { label: "TikTok", href: "https://www.tiktok.com/@valsys.software?is_from_webapp=1&sender_device=pc", icon: TikTokIcon, color: "#e8eaed" },
   { label: "Instagram", href: "#", icon: InstagramIcon, color: "#e8eaed" },
-  { label: "LinkedIn", href: "#", icon: Linkedin, color: "#e8eaed" },
-  { label: "Upwork", href: "#", icon: UpworkIcon, color: "#e8eaed" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/valsys-software", icon: Linkedin, color: "#e8eaed" },
+  { label: "Upwork", href: "https://www.upwork.com/agencies/2028700503822120263/", icon: UpworkIcon, color: "#e8eaed" },
 ]
 
 /* ---------------------------------------------------------- */
