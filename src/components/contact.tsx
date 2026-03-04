@@ -4,6 +4,8 @@
 import { useRef, useState, useCallback } from "react"
 import { Send, Mail, Clock, Shield } from "lucide-react"
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
+import { toast } from "sonner"
+import { sendEmailAction } from "@/actions/send-email"
 
 const spring = { type: "spring" as const, stiffness: 150, damping: 15, mass: 0.5 }
 const springSnappy = { type: "spring" as const, stiffness: 300, damping: 25, mass: 0.5 }
@@ -11,11 +13,11 @@ const springSnappy = { type: "spring" as const, stiffness: 300, damping: 25, mas
 const features = [
   { icon: Clock, label: "24-hour response" },
   { icon: Shield, label: "NDA on request" },
-  { icon: Mail, label: "hello@nexus.dev" },
+  { icon: Mail, label: "hello@valsys.dev" },
 ]
 
 /* ---------------------------------------------------------- */
-/*  Neon Input -- outer glow ring + glowing label on focus    */
+/* Neon Input -- outer glow ring + glowing label on focus    */
 /* ---------------------------------------------------------- */
 function NeonInput({
   id,
@@ -88,9 +90,9 @@ function NeonInput({
 }
 
 /* ---------------------------------------------------------- */
-/*  Magnetic Submit -- energy-burst hover                     */
+/* Magnetic Submit -- energy-burst hover                     */
 /* ---------------------------------------------------------- */
-function MagneticSubmit() {
+function MagneticSubmit({ isLoading }: { isLoading?: boolean }) {
   const ref = useRef<HTMLButtonElement>(null)
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -100,12 +102,12 @@ function MagneticSubmit() {
 
   const onMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!ref.current) return
+      if (!ref.current || isLoading) return
       const r = ref.current.getBoundingClientRect()
       mx.set((e.clientX - r.left - r.width / 2) * 0.25)
       my.set((e.clientY - r.top - r.height / 2) * 0.25)
     },
-    [mx, my]
+    [mx, my, isLoading]
   )
 
   const onLeave = useCallback(() => {
@@ -118,17 +120,22 @@ function MagneticSubmit() {
     <motion.button
       ref={ref}
       type="submit"
+      disabled={isLoading}
       style={{ x: sx, y: sy }}
       onMouseMove={onMove}
       onMouseEnter={() => setBtnHovered(true)}
       onMouseLeave={onLeave}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={!isLoading ? { scale: 1.03 } : {}}
+      whileTap={!isLoading ? { scale: 0.97 } : {}}
       transition={springSnappy}
-      className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground gpu"
+      className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground gpu disabled:opacity-70 disabled:cursor-not-allowed"
     >
-      <span className="relative z-10">Send Message</span>
-      <Send className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+      <span className="relative z-10">
+        {isLoading ? "Sending..." : "Send Message"}
+      </span>
+      {!isLoading && (
+        <Send className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+      )}
 
       {/* Bright animated gradient overlay -- energy burst */}
       <motion.div
@@ -139,52 +146,81 @@ function MagneticSubmit() {
           backgroundSize: "200% 100%",
         }}
         animate={
-          btnHovered
+          btnHovered && !isLoading
             ? { backgroundPosition: ["0% center", "100% center"] }
             : { backgroundPosition: "0% center" }
         }
         transition={
-          btnHovered
+          btnHovered && !isLoading
             ? { duration: 1.2, repeat: Infinity, ease: "linear" }
             : { duration: 0.3 }
         }
         initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
+        whileHover={!isLoading ? { opacity: 1 } : {}}
       />
 
       {/* Outer neon glow on hover */}
       <div
         className="pointer-events-none absolute -inset-1 rounded-xl transition-all duration-400"
         style={{
-          boxShadow: btnHovered
+          boxShadow: btnHovered && !isLoading
             ? "0 0 20px rgba(0,212,255,0.25), 0 0 50px rgba(124,58,237,0.15), 0 0 80px rgba(0,212,255,0.08)"
             : "none",
         }}
       />
 
       {/* Shine sweep */}
-      <motion.div
-        className="absolute inset-0 gpu"
-        style={{
-          background:
-            "linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.15) 50%,transparent 60%)",
-        }}
-        initial={{ x: "-100%" }}
-        whileHover={{ x: "100%" }}
-        transition={{ duration: 0.6 }}
-      />
+      {!isLoading && (
+        <motion.div
+          className="absolute inset-0 gpu"
+          style={{
+            background:
+              "linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.15) 50%,transparent 60%)",
+          }}
+          initial={{ x: "-100%" }}
+          whileHover={{ x: "100%" }}
+          transition={{ duration: 0.6 }}
+        />
+      )}
     </motion.button>
   )
 }
 
 /* ---------------------------------------------------------- */
-/*  Contact Section                                           */
+/* Contact Section                                           */
 /* ---------------------------------------------------------- */
 export function Contact() {
   const ref = useRef<HTMLElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [form, setForm] = useState({ name: "", email: "", message: "" })
   const [focused, setFocused] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!form.name || !form.email || !form.message) {
+      toast.error("Please fill in all fields.")
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const result = await sendEmailAction(form)
+
+      if (result?.success) {
+        toast.success("Message sent successfully! We'll be in touch soon.")
+        setForm({ name: "", email: "", message: "" })
+      } else {
+        toast.error(result?.error || "Something went wrong. Please try again.")
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please email us directly.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const stagger = {
     hidden: {},
@@ -282,7 +318,7 @@ export function Contact() {
             transition={{ delay: 0.2, ...spring }}
           >
             <form
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmit}
               className="glass relative overflow-hidden rounded-2xl p-8 lg:p-10"
             >
               {/* Gradient border */}
@@ -356,7 +392,7 @@ export function Contact() {
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.64, ...spring }}
                 >
-                  <MagneticSubmit />
+                  <MagneticSubmit isLoading={isSubmitting} />
                 </motion.div>
               </div>
 
