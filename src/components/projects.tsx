@@ -13,51 +13,26 @@ import {
   useSpring,
   useMotionValue,
 } from "framer-motion"
+import { useLanguage } from "@/context/language-context"
 
 const spring = { type: "spring" as const, stiffness: 150, damping: 15, mass: 0.5 }
 const springSnappy = { type: "spring" as const, stiffness: 300, damping: 25, mass: 0.5 }
 
 const DEMO_BASE = "https://valsysdemo.vercel.app"
 
-const projects = [
-  {
-    title: "Aegis",
-    category: "Healthcare OS",
-    description:
-      "A streamlined operations platform for medical professionals. Engineered to optimize scheduling, patient flow, and resource allocation with absolute reliability.",
-    image: "/images/project-1.png",
-    url: `${DEMO_BASE}/aegis`,
-  },
-  {
-    title: "Kinetix",
-    category: "Academy Management",
-    description:
-      "A comprehensive management ecosystem for academies. It unifies attendance tracking, seamless payments, and resource coordination into one fluid digital experience.",
-    image: "/images/project-2.png",
-    url: `${DEMO_BASE}/kinetix`,
-  },
-  {
-    title: "NovaPay",
-    category: "Fintech & Trading",
-    description:
-      "A high-frequency trading and financial dashboard. Designed for ultra-low latency, delivering real-time market data through a stunning, minimalist interface.",
-    image: "/images/project-3.png",
-    url: `${DEMO_BASE}/novapay`,
-  },
-  {
-    title: "OmniStock",
-    category: "Supply Chain",
-    description:
-      "An intelligent inventory management system. Built to handle complex logistics with real-time stock tracking and elegant, data-driven dashboards.",
-    image: "/images/project-4.png",
-    url: `${DEMO_BASE}/omnistock`,
-  },
+const projectsBase = [
+  { title: "Aegis",    tKey: "aegis"    as const, image: "/images/project-1.png", url: `${DEMO_BASE}/aegis` },
+  { title: "Kinetix",  tKey: "kinetix"  as const, image: "/images/project-2.png", url: `${DEMO_BASE}/kinetix` },
+  { title: "NovaPay",  tKey: "novapay"  as const, image: "/images/project-3.png", url: `${DEMO_BASE}/novapay` },
+  { title: "OmniStock",tKey: "omnistock"as const, image: "/images/project-4.png", url: `${DEMO_BASE}/omnistock` },
 ]
+
+type ProjectItem = { title: string; category: string; description: string; image: string; url: string }
 
 /* ---------------------------------------------------------- */
 /*  Project Card with 3D tilt, glowing image, equal height    */
 /* ---------------------------------------------------------- */
-function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
+function ProjectCard({ project, index, viewLabel }: { project: ProjectItem; index: number; viewLabel: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-60px" })
   const [hovered, setHovered] = useState(false)
@@ -196,7 +171,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
                 animate={hovered ? { opacity: 1, x: 0 } : { opacity: 0, x: -8 }}
                 transition={springSnappy}
               >
-                View <ExternalLink className="h-3 w-3" />
+                {viewLabel} <ExternalLink className="h-3 w-3" />
               </motion.span>
             </div>
           </div>
@@ -212,6 +187,15 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
 export function Projects() {
   const headRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(headRef, { once: true, margin: "-100px" })
+  const { t } = useLanguage()
+
+  const projects: ProjectItem[] = projectsBase.map((p) => ({
+    title: p.title,
+    image: p.image,
+    url: p.url,
+    category: t.projects[p.tKey].category,
+    description: t.projects[p.tKey].desc,
+  }))
 
   return (
     <section id="work" className="relative py-32">
@@ -252,7 +236,7 @@ export function Projects() {
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={spring}
             >
-              Featured Work
+              {t.projects.label}
             </motion.p>
             <motion.h2
               className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
@@ -260,19 +244,19 @@ export function Projects() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.08, ...spring }}
             >
-              Projects that{" "}
-              <span className="text-muted-foreground">define industries.</span>
+              {t.projects.heading}{" "}
+              <span className="text-muted-foreground">{t.projects.headingAccent}</span>
             </motion.h2>
           </div>
           <motion.a
-            href="#"
+            href="#contact"
             className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary gpu"
             initial={{ opacity: 0, x: 20 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 0.2, ...spring }}
             whileHover={{ x: 4, transition: springSnappy }}
           >
-            View all projects
+            {t.projects.viewAll}
             <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </motion.a>
         </div>
@@ -280,7 +264,7 @@ export function Projects() {
         {/* Equal-height grid */}
         <div className="grid auto-rows-fr grid-cols-1 gap-6 md:grid-cols-2">
           {projects.map((p, i) => (
-            <ProjectCard key={p.title} project={p} index={i} />
+            <ProjectCard key={p.title} project={p} index={i} viewLabel={t.projects.viewDemo} />
           ))}
         </div>
       </div>

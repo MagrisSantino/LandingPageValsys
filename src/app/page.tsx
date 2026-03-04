@@ -8,33 +8,68 @@ import {
   Mail,
   ArrowUpRight,
   Send,
+  Globe,
+  ChevronDown,
 } from "lucide-react";
 import { Dock } from "@/components/dock";
 import { Projects } from "@/components/projects";
 import { sendEmailAction } from "@/actions/send-email";
+import { useLanguage } from "@/context/language-context";
+import { translations, Lang } from "@/i18n/translations";
+
+const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
+  { code: "en", label: "English", flag: "🇺🇸" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
+  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "it", label: "Italiano", flag: "🇮🇹" },
+  { code: "de", label: "Deutsch", flag: "🇩🇪" },
+  { code: "pt", label: "Português", flag: "🇧🇷" },
+  { code: "zh", label: "中文", flag: "🇨🇳" },
+  { code: "ja", label: "日本語", flag: "🇯🇵" },
+]
 
 export default function Home() {
+  const { lang, setLang, t } = useLanguage();
+
   // --- FORM STATES ---
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
+  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string; message?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{success?: boolean, message?: string} | null>(null);
+  const [langOpen, setLangOpen] = useState(false);
 
   // --- FORM SUBMIT HANDLER ---
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Custom validation
+    const errors: { name?: string; email?: string; message?: string } = {};
+    if (!formState.name.trim()) errors.name = t.contact.fieldRequired;
+    if (!formState.email.trim()) {
+      errors.email = t.contact.fieldRequired;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
+      errors.email = t.contact.emailInvalid;
+    }
+    if (!formState.message.trim()) errors.message = t.contact.fieldRequired;
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setFormErrors({});
+
     setIsSubmitting(true);
     setSubmitStatus(null);
 
     try {
       const res = await sendEmailAction(formState);
       if (res?.success) {
-        setSubmitStatus({ success: true, message: "Message sent successfully! We'll be in touch soon." });
-        setFormState({ name: "", email: "", message: "" }); // Clear form
+        setSubmitStatus({ success: true, message: t.contact.successMsg });
+        setFormState({ name: "", email: "", message: "" });
       } else {
-        setSubmitStatus({ success: false, message: res?.error || "Failed to send message. Please try again." });
+        setSubmitStatus({ success: false, message: res?.error || t.contact.errorMsg });
       }
     } catch (err) {
-      setSubmitStatus({ success: false, message: "An unexpected error occurred. Please try again." });
+      setSubmitStatus({ success: false, message: t.contact.unexpectedError });
     } finally {
       setIsSubmitting(false);
     }
@@ -326,38 +361,61 @@ export default function Home() {
         <canvas id="particle-canvas" />
         <div id="smooth-content">
           <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/40 backdrop-blur-md">
-            <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-6 h-20 grid grid-cols-3 items-center">
               <div
                 className="flex items-center gap-3 cursor-pointer group magnetic-target"
                 data-strength="20"
               >
-                <div className="relative w-8 h-8 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-white/10 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out" />
-                  <div className="w-2.5 h-2.5 bg-white rounded-full z-10" />
-                  <div className="absolute w-full h-full border border-white/30 rounded-full animate-[spin_4s_linear_infinite]" />
-                </div>
+                <img src="/icon.png" alt="Valsys" className="h-10 w-10 object-contain" />
                 <span className="text-white font-semibold tracking-tight text-lg group-hover:tracking-widest transition-all duration-300">
                   VALSYS
                 </span>
               </div>
-              <div className="hidden md:flex items-center gap-10 text-xs font-medium uppercase tracking-widest text-neutral-400">
+              <div className="hidden md:flex items-center justify-center gap-10 text-xs font-medium uppercase tracking-widest text-neutral-400">
                 <a href="#services" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">
-                  Services
+                  {t.nav.services}
                 </a>
                 <a href="#work" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">
-                  Work
+                  {t.nav.work}
                 </a>
                 <a href="#about" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">
-                  About
+                  {t.nav.about}
                 </a>
               </div>
-              <a
-                href="#contact"
-                className="hidden md:inline-flex items-center justify-center px-6 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-wide rounded-full hover:bg-cyan-400 transition-colors magnetic-target btn-magnetic"
-                data-strength="30"
-              >
-                Start Project
-              </a>
+              <div className="hidden md:flex items-center justify-end gap-3">
+                {/* Language Switcher */}
+                <div className="relative">
+                  <button
+                    onClick={() => setLangOpen(!langOpen)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-white/10 bg-white/5 text-xs font-bold uppercase tracking-wide text-neutral-300 hover:border-white/30 hover:text-white transition-all"
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    {lang.toUpperCase()}
+                    <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${langOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {langOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-white/10 bg-black/90 backdrop-blur-md shadow-xl z-50 overflow-hidden">
+                      {LANGUAGES.map((l) => (
+                        <button
+                          key={l.code}
+                          onClick={() => { setLang(l.code); setLangOpen(false); }}
+                          className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs text-left transition-colors hover:bg-white/10 ${lang === l.code ? "text-cyan-400 bg-white/5" : "text-neutral-300"}`}
+                        >
+                          <span>{l.flag}</span>
+                          <span className="font-medium">{l.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <a
+                  href="#contact"
+                  className="inline-flex items-center justify-center px-6 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-wide rounded-full hover:bg-cyan-400 transition-colors magnetic-target btn-magnetic"
+                  data-strength="30"
+                >
+                  {t.nav.startProject}
+                </a>
+              </div>
             </div>
           </nav>
 
@@ -368,47 +426,47 @@ export default function Home() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
               </span>
               <span className="text-[10px] font-bold tracking-[0.2em] text-cyan-400 uppercase">
-                System Operational
+                {t.hero.badge}
               </span>
             </div>
             <h1 className="max-w-5xl text-5xl md:text-7xl lg:text-9xl font-semibold tracking-tighter text-white leading-[0.9] mb-10 select-none">
               <div className="overflow-hidden">
-                <span className="scramble-text block" data-value="WE BUILD">
-                  WE BUILD
+                <span className="scramble-text block" data-value={t.hero.line1}>
+                  {t.hero.line1}
                 </span>
               </div>
               <div className="overflow-hidden">
-                <span className="scramble-text block" data-value="FLAWLESS">
-                  FLAWLESS
+                <span className="scramble-text block" data-value={t.hero.line2}>
+                  {t.hero.line2}
                 </span>
               </div>
               <div className="overflow-hidden mt-2">
-                <span className="liquid-text block italic pr-2">SOFTWARE.</span>
+                <span className="liquid-text block italic pr-2">{t.hero.line3}</span>
               </div>
             </h1>
             <p className="max-w-xl text-neutral-400 text-sm md:text-base leading-relaxed mb-12 font-light tracking-wide">
-              Elite engineering for the next generation of digital products. <br className="hidden md:block" />
-              We fuse art, code, and physics into unforgettable experiences.
+              {t.hero.tagline}
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-6">
-              <button
+              <a
+                href="#work"
                 className="relative px-10 py-4 bg-cyan-500 rounded-full text-black text-xs font-bold uppercase tracking-widest overflow-hidden group magnetic-target btn-magnetic"
                 data-strength="50"
                 id="btn-ripple-trigger"
               >
                 <span className="relative z-10 flex items-center gap-2 group-hover:gap-4 transition-all">
-                  View Portfolio
+                  {t.hero.viewPortfolio}
                   <iconify-icon icon="solar:arrow-right-linear" width="18" height="18" />
                 </span>
                 <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out mix-blend-overlay" />
-              </button>
-              <button className="px-10 py-4 bg-transparent border border-white/20 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all magnetic-target btn-magnetic" data-strength="30">
-                Our Services
-              </button>
+              </a>
+              <a href="#services" className="px-10 py-4 bg-transparent border border-white/20 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all magnetic-target btn-magnetic" data-strength="30">
+                {t.hero.ourServices}
+              </a>
             </div>
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+            <div className="absolute bottom-28 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
               <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-cyan-500 to-transparent" />
-              <span className="text-[10px] uppercase tracking-widest text-cyan-500">Scroll</span>
+              <span className="text-[10px] uppercase tracking-widest text-cyan-500">{t.hero.scroll}</span>
             </div>
           </header>
 
@@ -442,10 +500,10 @@ export default function Home() {
             <div className="max-w-7xl mx-auto">
               <div className="mb-24 spring-up">
                 <h2 className="text-4xl md:text-6xl font-semibold tracking-tighter text-white mb-6">
-                  Designed for <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Velocity.</span>
+                  {t.services.heading} <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">{t.services.headingAccent}</span>
                 </h2>
                 <p className="text-neutral-400 text-lg max-w-2xl font-light">
-                  We don&apos;t just write code. We architect scalable, fault-tolerant systems that power the future of industry.
+                  {t.services.description}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -459,12 +517,12 @@ export default function Home() {
                       <iconify-icon icon="solar:code-circle-linear" className="text-cyan-400 text-3xl" />
                     </div>
                     <h3 className="text-3xl font-semibold text-white mb-4 tracking-tight">
-                      Full-Stack
+                      {t.services.fullStack.title1}
                       <br />
-                      Engineering
+                      {t.services.fullStack.title2}
                     </h3>
                     <p className="text-neutral-400 text-sm leading-7">
-                      React, Next.js, and Node.js architectures built for millions of concurrent users. Performance is not a feature; it&apos;s a requirement.
+                      {t.services.fullStack.desc}
                     </p>
                   </div>
                   <div className="holo-content flex gap-2 mt-8">
@@ -482,12 +540,12 @@ export default function Home() {
                       <iconify-icon icon="solar:shield-check-linear" className="text-purple-400 text-3xl" />
                     </div>
                     <h3 className="text-3xl font-semibold text-white mb-4 tracking-tight">
-                      Automated
+                      {t.services.qa.title1}
                       <br />
-                      Quality Assurance
+                      {t.services.qa.title2}
                     </h3>
                     <p className="text-neutral-400 text-sm leading-7">
-                      Zero-defect policy. We implement rigorous Playwright and Cypress end-to-end testing pipelines that catch regressions before they exist.
+                      {t.services.qa.desc}
                     </p>
                   </div>
                   <div className="holo-content flex gap-2 mt-8">
@@ -505,12 +563,12 @@ export default function Home() {
                       <iconify-icon icon="solar:magic-stick-3-linear" className="text-amber-400 text-3xl" />
                     </div>
                     <h3 className="text-3xl font-semibold text-white mb-4 tracking-tight">
-                      AI &amp; Intelligent
+                      {t.services.ai.title1}
                       <br />
-                      Agents
+                      {t.services.ai.title2}
                     </h3>
                     <p className="text-neutral-400 text-sm leading-7">
-                      LLM integration, RAG pipelines, and autonomous agents. We give your software a brain, enabling capabilities that were impossible yesterday.
+                      {t.services.ai.desc}
                     </p>
                   </div>
                   <div className="holo-content flex gap-2 mt-8">
@@ -528,12 +586,12 @@ export default function Home() {
                       <iconify-icon icon="solar:server-square-linear" className="text-emerald-400 text-3xl" />
                     </div>
                     <h3 className="text-3xl font-semibold text-white mb-4 tracking-tight">
-                      Platform
+                      {t.services.platform.title1}
                       <br />
-                      Infrastructure
+                      {t.services.platform.title2}
                     </h3>
                     <p className="text-neutral-400 text-sm leading-7">
-                      Kubernetes orchestration, IaC, and observability. We build the bedrock that allows your application to scale infinitely without downtime.
+                      {t.services.platform.desc}
                     </p>
                   </div>
                   <div className="holo-content flex gap-2 mt-8">
@@ -551,26 +609,26 @@ export default function Home() {
             <div className="max-w-7xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32">
                 <div className="spring-up">
-                  <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4 block">Let&apos;s work together</span>
+                  <span className="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-4 block">{t.contact.label}</span>
                   <h2 className="text-4xl md:text-6xl font-semibold tracking-tighter text-white mb-6">
-                    Ready to build <br />
-                    <span className="text-neutral-500">something extraordinary?</span>
+                    {t.contact.heading} <br />
+                    <span className="text-neutral-500">{t.contact.headingMuted}</span>
                   </h2>
                   <p className="text-neutral-400 text-lg font-light mb-12 max-w-md">
-                    Tell us about your project and we&apos;ll respond within 24 hours with a detailed proposal. No commitment required.
+                    {t.contact.description}
                   </p>
-                  <div className="space-y-6">
+                  <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-4 text-sm text-neutral-300">
                       <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-cyan-400">
                         <Clock className="w-5 h-5" />
                       </div>
-                      <span>24-hour response time</span>
+                      <span>{t.contact.responseTime}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-neutral-300">
                       <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-purple-400">
                         <ShieldCheck className="w-5 h-5" />
                       </div>
-                      <span>NDA available on request</span>
+                      <span>{t.contact.nda}</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-neutral-300">
                       <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-white">
@@ -584,47 +642,47 @@ export default function Home() {
                   <div className="holo-glare" />
                   
                   <form onSubmit={handleFormSubmit} className="relative z-10 flex flex-col gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Name</label>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold pl-1">{t.contact.formName}</label>
                       <input
                         type="text"
-                        required
                         value={formState.name}
-                        onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                        placeholder="Your name"
-                        className="w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600"
+                        onChange={(e) => { setFormState({ ...formState, name: e.target.value }); setFormErrors((prev) => ({ ...prev, name: undefined })); }}
+                        placeholder={t.contact.namePlaceholder}
+                        className={`w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600 ${formErrors.name ? "border border-red-500/60" : ""}`}
                       />
+                      {formErrors.name && <p className="text-xs text-red-400 mt-1">{formErrors.name}</p>}
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Email</label>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold pl-1">{t.contact.formEmail}</label>
                       <input
-                        type="email"
-                        required
+                        type="text"
                         value={formState.email}
-                        onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                        placeholder="you@company.com"
-                        className="w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600"
+                        onChange={(e) => { setFormState({ ...formState, email: e.target.value }); setFormErrors((prev) => ({ ...prev, email: undefined })); }}
+                        placeholder={t.contact.emailPlaceholder}
+                        className={`w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600 ${formErrors.email ? "border border-red-500/60" : ""}`}
                       />
+                      {formErrors.email && <p className="text-xs text-red-400 mt-1">{formErrors.email}</p>}
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Tell us about your project</label>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold pl-1">{t.contact.formProject}</label>
                       <textarea
                         rows={4}
-                        required
                         value={formState.message}
-                        onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                        placeholder="Describe your project, timeline, and budget..."
-                        className="w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600 resize-none"
+                        onChange={(e) => { setFormState({ ...formState, message: e.target.value }); setFormErrors((prev) => ({ ...prev, message: undefined })); }}
+                        placeholder={t.contact.messagePlaceholder}
+                        className={`w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600 resize-none ${formErrors.message ? "border border-red-500/60" : ""}`}
                       />
+                      {formErrors.message && <p className="text-xs text-red-400 mt-1">{formErrors.message}</p>}
                     </div>
-                    
+
                     <button
                       type="submit"
                       disabled={isSubmitting}
                       className="mt-4 w-full py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all active:scale-[0.98] magnetic-target btn-magnetic flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       data-strength="20"
                     >
-                      {isSubmitting ? "Sending..." : "Send Message"}
+                      {isSubmitting ? t.contact.submitting : t.contact.submit}
                       {!isSubmitting && <Send className="w-4 h-4" />}
                     </button>
                     
@@ -641,7 +699,7 @@ export default function Home() {
                       </div>
                     )}
 
-                    <p className="text-[10px] text-neutral-600 text-center">We respect your privacy. No spam, ever.</p>
+                    <p className="text-[10px] text-neutral-600 text-center">{t.contact.privacyNote}</p>
                   </form>
                 </div>
               </div>
@@ -651,13 +709,13 @@ export default function Home() {
           <footer className="py-20 px-4 border-t border-white/10 bg-black">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-white rounded-full" />
+                <img src="/icon.png" alt="Valsys" className="h-8 w-8 object-contain" />
                 <span className="text-white font-bold tracking-tight">VALSYS</span>
               </div>
               <div className="flex items-center gap-8 text-xs font-medium uppercase tracking-widest text-neutral-500 md:ml-auto md:pr-0">
-                <a href="#" className="hover:text-white transition-colors">Privacy</a>
-                <a href="#" className="hover:text-white transition-colors">Terms</a>
-                <span className="text-neutral-600 normal-case tracking-normal">© 2026 VALSYS ENGINEERING</span>
+                <a href="#" className="hover:text-white transition-colors">{t.footer.privacy}</a>
+                <a href="#" className="hover:text-white transition-colors">{t.footer.terms}</a>
+                <span className="text-neutral-600 normal-case tracking-normal">{t.footer.copyright}</span>
               </div>
             </div>
           </footer>
