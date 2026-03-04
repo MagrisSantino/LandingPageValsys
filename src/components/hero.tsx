@@ -252,7 +252,7 @@ export function Hero() {
 
       {/* Content -- parallax translateY + opacity only */}
       <motion.div
-        className="relative z-10 mx-auto max-w-5xl px-6 text-center gpu"
+        className="relative z-10 mx-auto max-w-5xl px-6 pb-32 text-center gpu"
         style={{ y: contentY, opacity: contentOp }}
         variants={stagger}
         initial="hidden"
@@ -303,7 +303,7 @@ export function Hero() {
         </motion.div>
 
         {/* Trust bar */}
-        <motion.div variants={fadeUp} className="mt-16 flex flex-col items-center gap-4">
+        <motion.div variants={fadeUp} className="mt-8 sm:mt-16 flex flex-col items-center gap-4">
           <p className="text-xs tracking-widest text-muted-foreground uppercase">Trusted by innovative teams worldwide</p>
           <div className="flex flex-wrap items-center justify-center gap-8 text-muted-foreground/40">
             {["Axiom", "Verida", "Pulse AI", "Dataflux", "Orbitra"].map((n, i) => (
@@ -324,7 +324,7 @@ export function Hero() {
       {/* Scroll indicator */}
       <motion.a
         href="#services"
-        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-muted-foreground/40 hover:text-primary gpu"
+        className="absolute bottom-8 left-1/2 z-20 hidden tall:flex -translate-x-1/2 flex-col items-center gap-2 text-muted-foreground/40 hover:text-primary gpu"
         aria-label="Scroll down"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

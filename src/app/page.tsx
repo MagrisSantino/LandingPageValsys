@@ -10,6 +10,8 @@ import {
   Send,
   Globe,
   ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 import { Dock } from "@/components/dock";
 import { Projects } from "@/components/projects";
@@ -37,6 +39,7 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{success?: boolean, message?: string} | null>(null);
   const [langOpen, setLangOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // --- FORM SUBMIT HANDLER ---
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -362,28 +365,34 @@ export default function Home() {
         <div id="smooth-content">
           <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/40 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-6 h-20 grid grid-cols-3 items-center">
-              <div
-                className="flex items-center gap-3 cursor-pointer group magnetic-target"
-                data-strength="20"
-              >
-                <img src="/icon.png" alt="Valsys" className="h-10 w-10 object-contain" />
-                <span className="text-white font-semibold tracking-tight text-lg group-hover:tracking-widest transition-all duration-300">
-                  VALSYS
-                </span>
+              {/* Col izquierda: logo (desktop) | hamburger (mobile) */}
+              <div className="flex items-center">
+                <div className="hidden md:flex items-center gap-3 cursor-pointer group magnetic-target" data-strength="20">
+                  <img src="/icon.png" alt="Valsys" className="h-10 w-10 object-contain" />
+                  <span className="text-white font-semibold tracking-tight text-lg group-hover:tracking-widest transition-all duration-300">VALSYS</span>
+                </div>
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="md:hidden flex h-10 w-10 items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </button>
               </div>
-              <div className="hidden md:flex items-center justify-center gap-10 text-xs font-medium uppercase tracking-widest text-neutral-400">
-                <a href="#services" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">
-                  {t.nav.services}
-                </a>
-                <a href="#work" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">
-                  {t.nav.work}
-                </a>
-                <a href="#about" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">
-                  {t.nav.about}
-                </a>
+              {/* Col centro: nav links (desktop) | logo (mobile) */}
+              <div className="flex items-center justify-center">
+                <div className="hidden md:flex items-center gap-10 text-xs font-medium uppercase tracking-widest text-neutral-400">
+                  <a href="#services" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">{t.nav.services}</a>
+                  <a href="#work" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">{t.nav.work}</a>
+                  <a href="#about" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">{t.nav.about}</a>
+                </div>
+                <div className="flex md:hidden items-center gap-3 cursor-pointer group" >
+                  <img src="/icon.png" alt="Valsys" className="h-10 w-10 object-contain" />
+                  <span className="text-white font-semibold tracking-tight text-lg">VALSYS</span>
+                </div>
               </div>
-              <div className="hidden md:flex items-center justify-end gap-3">
-                {/* Language Switcher */}
+              {/* Col derecha: language switcher + CTA (desktop) | language switcher (mobile) */}
+              <div className="flex items-center justify-end gap-3">
                 <div className="relative">
                   <button
                     onClick={() => setLangOpen(!langOpen)}
@@ -410,13 +419,21 @@ export default function Home() {
                 </div>
                 <a
                   href="#contact"
-                  className="inline-flex items-center justify-center px-6 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-wide rounded-full hover:bg-cyan-400 transition-colors magnetic-target btn-magnetic"
+                  className="hidden md:inline-flex items-center justify-center px-6 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-wide rounded-full hover:bg-cyan-400 transition-colors magnetic-target btn-magnetic"
                   data-strength="30"
                 >
                   {t.nav.startProject}
                 </a>
               </div>
             </div>
+            {/* Mobile menu */}
+            {mobileMenuOpen && (
+              <div className="md:hidden border-t border-white/5 bg-black/90 backdrop-blur-md px-6 py-4 flex flex-col gap-3">
+                <a href="#services" onClick={() => setMobileMenuOpen(false)} className="text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors">{t.nav.services}</a>
+                <a href="#work" onClick={() => setMobileMenuOpen(false)} className="text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors">{t.nav.work}</a>
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors">{t.nav.about}</a>
+              </div>
+            )}
           </nav>
 
           <header className="relative z-10 min-h-screen flex flex-col justify-center items-center pt-24 pb-32 px-4 text-center glitch-enter">
@@ -447,24 +464,33 @@ export default function Home() {
             <p className="max-w-xl text-neutral-400 text-sm md:text-base leading-relaxed mb-12 font-light tracking-wide">
               {t.hero.tagline}
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+              {/* Solo mobile: Start a Project (blanco) arriba */}
+              <a
+                href="#contact"
+                className="sm:hidden w-64 text-center px-6 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-widest rounded-full hover:bg-cyan-400 transition-colors"
+              >
+                {t.nav.startProject}
+              </a>
+              {/* Siempre visible: View Portfolio */}
               <a
                 href="#work"
-                className="relative px-10 py-4 bg-cyan-500 rounded-full text-black text-xs font-bold uppercase tracking-widest overflow-hidden group magnetic-target btn-magnetic"
+                className="relative w-64 sm:w-auto text-center px-6 py-2.5 sm:px-10 sm:py-4 bg-cyan-500 rounded-full text-black text-xs font-bold uppercase tracking-widest overflow-hidden group magnetic-target btn-magnetic"
                 data-strength="50"
                 id="btn-ripple-trigger"
               >
-                <span className="relative z-10 flex items-center gap-2 group-hover:gap-4 transition-all">
+                <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-4 transition-all">
                   {t.hero.viewPortfolio}
                   <iconify-icon icon="solar:arrow-right-linear" width="18" height="18" />
                 </span>
                 <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out mix-blend-overlay" />
               </a>
-              <a href="#services" className="px-10 py-4 bg-transparent border border-white/20 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all magnetic-target btn-magnetic" data-strength="30">
+              {/* Siempre visible: Our Services */}
+              <a href="#services" className="w-64 sm:w-auto text-center px-6 py-2.5 sm:px-10 sm:py-4 bg-transparent border border-white/20 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white/5 hover:border-white/40 transition-all magnetic-target btn-magnetic" data-strength="30">
                 {t.hero.ourServices}
               </a>
             </div>
-            <div className="absolute bottom-28 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+            <div className="absolute bottom-28 left-1/2 -translate-x-1/2 hidden tall:flex flex-col items-center gap-2 opacity-50">
               <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-cyan-500 to-transparent" />
               <span className="text-[10px] uppercase tracking-widest text-cyan-500">{t.hero.scroll}</span>
             </div>
