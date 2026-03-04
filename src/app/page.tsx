@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Fragment } from "react";
+import { useEffect, Fragment, useState } from "react";
 import Script from "next/script";
 import {
   Clock,
@@ -11,8 +11,35 @@ import {
 } from "lucide-react";
 import { Dock } from "@/components/dock";
 import { Projects } from "@/components/projects";
+import { sendEmailAction } from "@/actions/send-email";
 
 export default function Home() {
+  // --- FORM STATES ---
+  const [formState, setFormState] = useState({ name: "", email: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{success?: boolean, message?: string} | null>(null);
+
+  // --- FORM SUBMIT HANDLER ---
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const res = await sendEmailAction(formState);
+      if (res?.success) {
+        setSubmitStatus({ success: true, message: "Message sent successfully! We'll be in touch soon." });
+        setFormState({ name: "", email: "", message: "" }); // Clear form
+      } else {
+        setSubmitStatus({ success: false, message: res?.error || "Failed to send message. Please try again." });
+      }
+    } catch (err) {
+      setSubmitStatus({ success: false, message: "An unexpected error occurred. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     const canvas = document.getElementById("particle-canvas") as HTMLCanvasElement | null;
     const cursorDot = document.getElementById("cursor-dot");
@@ -555,11 +582,15 @@ export default function Home() {
                 </div>
                 <div className="holo-card rounded-3xl p-8 md:p-10 border border-white/10 bg-white/2 spring-up">
                   <div className="holo-glare" />
-                  <form className="relative z-10 flex flex-col gap-6">
+                  
+                  <form onSubmit={handleFormSubmit} className="relative z-10 flex flex-col gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Name</label>
                       <input
                         type="text"
+                        required
+                        value={formState.name}
+                        onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                         placeholder="Your name"
                         className="w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600"
                       />
@@ -568,6 +599,9 @@ export default function Home() {
                       <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Email</label>
                       <input
                         type="email"
+                        required
+                        value={formState.email}
+                        onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                         placeholder="you@company.com"
                         className="w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600"
                       />
@@ -576,18 +610,37 @@ export default function Home() {
                       <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold">Tell us about your project</label>
                       <textarea
                         rows={4}
+                        required
+                        value={formState.message}
+                        onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                         placeholder="Describe your project, timeline, and budget..."
                         className="w-full p-4 rounded-lg mag-input text-white text-sm placeholder:text-neutral-600 resize-none"
                       />
                     </div>
+                    
                     <button
-                      type="button"
-                      className="mt-4 w-full py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all active:scale-[0.98] magnetic-target btn-magnetic flex items-center justify-center gap-2"
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="mt-4 w-full py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all active:scale-[0.98] magnetic-target btn-magnetic flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       data-strength="20"
                     >
-                      Send Message
-                      <Send className="w-4 h-4" />
+                      {isSubmitting ? "Sending..." : "Send Message"}
+                      {!isSubmitting && <Send className="w-4 h-4" />}
                     </button>
+                    
+                    {/* Glowing status message matching the theme */}
+                    {submitStatus && (
+                      <div
+                        className={`px-4 py-3 mt-2 rounded-lg border text-sm text-center font-medium tracking-wide transition-all ${
+                          submitStatus.success
+                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                            : "bg-red-500/10 border-red-500/20 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+                        }`}
+                      >
+                        {submitStatus.message}
+                      </div>
+                    )}
+
                     <p className="text-[10px] text-neutral-600 text-center">We respect your privacy. No spam, ever.</p>
                   </form>
                 </div>

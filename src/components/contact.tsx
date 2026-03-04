@@ -17,7 +17,7 @@ const features = [
 ]
 
 /* ---------------------------------------------------------- */
-/* Neon Input -- outer glow ring + glowing label on focus    */
+/* Neon Input -- outer glow ring + glowing label on focus     */
 /* ---------------------------------------------------------- */
 function NeonInput({
   id,
@@ -90,9 +90,15 @@ function NeonInput({
 }
 
 /* ---------------------------------------------------------- */
-/* Magnetic Submit -- energy-burst hover                     */
+/* Magnetic Submit -- energy-burst hover                      */
 /* ---------------------------------------------------------- */
-function MagneticSubmit({ isLoading }: { isLoading?: boolean }) {
+function MagneticSubmit({ 
+  isLoading, 
+  onClick 
+}: { 
+  isLoading?: boolean; 
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void 
+}) {
   const ref = useRef<HTMLButtonElement>(null)
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -119,7 +125,8 @@ function MagneticSubmit({ isLoading }: { isLoading?: boolean }) {
   return (
     <motion.button
       ref={ref}
-      type="submit"
+      type="button" // Cambiado a 'button' para forzar nuestro onClick manual
+      onClick={onClick} // Enlace directo y forzado
       disabled={isLoading}
       style={{ x: sx, y: sy }}
       onMouseMove={onMove}
@@ -130,16 +137,16 @@ function MagneticSubmit({ isLoading }: { isLoading?: boolean }) {
       transition={springSnappy}
       className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground gpu disabled:opacity-70 disabled:cursor-not-allowed"
     >
-      <span className="relative z-10">
+      <span className="relative z-10 pointer-events-none">
         {isLoading ? "Sending..." : "Send Message"}
       </span>
       {!isLoading && (
-        <Send className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        <Send className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 pointer-events-none" />
       )}
 
       {/* Bright animated gradient overlay -- energy burst */}
       <motion.div
-        className="absolute inset-0 gpu"
+        className="absolute inset-0 gpu pointer-events-none"
         style={{
           background:
             "linear-gradient(105deg, var(--primary) 0%, var(--accent) 40%, var(--primary) 70%, var(--accent) 100%)",
@@ -172,7 +179,7 @@ function MagneticSubmit({ isLoading }: { isLoading?: boolean }) {
       {/* Shine sweep */}
       {!isLoading && (
         <motion.div
-          className="absolute inset-0 gpu"
+          className="absolute inset-0 gpu pointer-events-none"
           style={{
             background:
               "linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.15) 50%,transparent 60%)",
@@ -187,7 +194,7 @@ function MagneticSubmit({ isLoading }: { isLoading?: boolean }) {
 }
 
 /* ---------------------------------------------------------- */
-/* Contact Section                                           */
+/* Contact Section                                            */
 /* ---------------------------------------------------------- */
 export function Contact() {
   const ref = useRef<HTMLElement>(null)
@@ -196,29 +203,37 @@ export function Contact() {
   const [focused, setFocused] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
+    
+    console.log("🟢 1. ¡BOTON PRESIONADO! Datos actuales:", form);
 
     if (!form.name || !form.email || !form.message) {
-      toast.error("Please fill in all fields.")
-      return
+      console.log("🔴 2. Error: Faltan campos");
+      toast.error("Please fill in all fields.");
+      return;
     }
 
-    setIsSubmitting(true)
+    console.log("🟡 3. Iniciando envío a Resend...");
+    setIsSubmitting(true);
 
     try {
-      const result = await sendEmailAction(form)
+      const result = await sendEmailAction(form);
+      console.log("🔵 4. Respuesta de Resend recibida:", result);
 
       if (result?.success) {
-        toast.success("Message sent successfully! We'll be in touch soon.")
-        setForm({ name: "", email: "", message: "" })
+        toast.success("Message sent successfully! We'll be in touch soon.");
+        setForm({ name: "", email: "", message: "" });
       } else {
-        toast.error(result?.error || "Something went wrong. Please try again.")
+        toast.error(result?.error || "Something went wrong. Please try again.");
       }
     } catch (error) {
-      toast.error("An unexpected error occurred. Please email us directly.")
+      console.log("🔴 5. Error catcheado:", error);
+      toast.error("An unexpected error occurred. Please email us directly.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -234,12 +249,10 @@ export function Contact() {
 
   return (
     <section id="contact" ref={ref} className="relative py-32">
-      {/* Divider glow */}
       <motion.div
         className="pointer-events-none absolute top-0 left-1/2 h-px w-2/3 -translate-x-1/2 gpu"
         style={{
-          background:
-            "linear-gradient(90deg,transparent,rgba(124,58,237,0.2),transparent)",
+          background: "linear-gradient(90deg,transparent,rgba(124,58,237,0.2),transparent)",
         }}
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
@@ -247,12 +260,10 @@ export function Contact() {
         viewport={{ once: true }}
       />
 
-      {/* Breathing ambient orb */}
       <motion.div
         className="pointer-events-none absolute top-1/2 left-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full gpu"
         style={{
-          background:
-            "radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 70%)",
+          background: "radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 70%)",
         }}
         animate={{ scale: [1, 1.12, 1], opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -261,7 +272,6 @@ export function Contact() {
 
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* Left */}
           <motion.div
             className="flex flex-col justify-center"
             variants={stagger}
@@ -310,18 +320,18 @@ export function Contact() {
             </motion.div>
           </motion.div>
 
-          {/* Right -- Form */}
           <motion.div
             className="gpu"
             initial={{ opacity: 0, y: 35 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, ...spring }}
           >
+            {/* NOVALIDATE APAGARÁ EL BLOQUEO SILENCIOSO DEL NAVEGADOR */}
             <form
               onSubmit={handleSubmit}
+              noValidate
               className="glass relative overflow-hidden rounded-2xl p-8 lg:p-10"
             >
-              {/* Gradient border */}
               <div
                 className="pointer-events-none absolute inset-0 rounded-2xl opacity-50"
                 style={{
@@ -335,7 +345,6 @@ export function Contact() {
                 }}
               />
 
-              {/* Focus ambient glow */}
               <div
                 className="pointer-events-none absolute -top-32 -right-32 h-64 w-64 rounded-full gpu"
                 style={{
@@ -392,7 +401,8 @@ export function Contact() {
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.64, ...spring }}
                 >
-                  <MagneticSubmit isLoading={isSubmitting} />
+                  {/* AQUÍ ESTÁ LA MAGIA, PASAMOS EL ONCLICK DIRECTO */}
+                  <MagneticSubmit isLoading={isSubmitting} onClick={handleSubmit} />
                 </motion.div>
               </div>
 

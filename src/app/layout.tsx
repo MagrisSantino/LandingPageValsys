@@ -1,7 +1,8 @@
-// app/layout.tsx
+// src/app/layout.tsx
 import type { Metadata, Viewport } from 'next'
 import { Inter, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'sonner' // <-- IMPORTANTE: Importamos el Toaster
 import './globals.css'
 
 const inter = Inter({
@@ -50,6 +51,8 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased">
         {children}
+        {/* <-- IMPORTANTE: Agregamos el Toaster para que se vean las alertas --> */}
+        <Toaster theme="dark" position="bottom-right" richColors />
         <Analytics />
       </body>
     </html>
