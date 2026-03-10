@@ -12,7 +12,10 @@ import {
   ChevronDown,
   Menu,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import { Dock } from "@/components/dock";
 import { Projects } from "@/components/projects";
 import { sendEmailAction } from "@/actions/send-email";
@@ -32,6 +35,7 @@ const LANGUAGES: { code: Lang; label: string; flag: string }[] = [
 
 export default function Home() {
   const { lang, setLang, t } = useLanguage();
+  const { theme, setTheme } = useTheme();
 
   // --- FORM STATES ---
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
@@ -384,7 +388,13 @@ export default function Home() {
                 <div className="hidden md:flex items-center gap-10 text-xs font-medium uppercase tracking-widest text-neutral-400">
                   <a href="#services" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">{t.nav.services}</a>
                   <a href="#work" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">{t.nav.work}</a>
-                  <a href="#about" className="hover:text-cyan-400 transition-colors magnetic-target" data-strength="15">{t.nav.about}</a>
+                  <button
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                    className="hover:text-cyan-400 transition-colors"
+                    aria-label="Toggle theme"
+                  >
+                    {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  </button>
                 </div>
                 <div className="flex md:hidden items-center gap-3 cursor-pointer group" >
                   <img src="/icon.png" alt="Valsys" className="h-10 w-10 object-contain" />
@@ -431,7 +441,13 @@ export default function Home() {
               <div className="md:hidden border-t border-white/5 bg-black/90 backdrop-blur-md px-6 py-4 flex flex-col gap-3">
                 <a href="#services" onClick={() => setMobileMenuOpen(false)} className="text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors">{t.nav.services}</a>
                 <a href="#work" onClick={() => setMobileMenuOpen(false)} className="text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors">{t.nav.work}</a>
-                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors">{t.nav.about}</a>
+                <button
+                  onClick={() => { setTheme(theme === 'dark' ? 'light' : 'dark'); setMobileMenuOpen(false); }}
+                  className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-neutral-400 hover:text-cyan-400 py-2 transition-colors"
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                </button>
               </div>
             )}
           </nav>
@@ -490,10 +506,7 @@ export default function Home() {
                 {t.hero.ourServices}
               </a>
             </div>
-            <div className="absolute bottom-28 left-1/2 -translate-x-1/2 hidden tall:flex flex-col items-center gap-2 opacity-50">
-              <div className="w-[1px] h-12 bg-gradient-to-b from-transparent via-cyan-500 to-transparent" />
-              <span className="text-[10px] uppercase tracking-widest text-cyan-500">{t.hero.scroll}</span>
-            </div>
+
           </header>
 
           <div className="py-12 border-y border-white/5 bg-black/50 backdrop-blur-sm relative z-20 overflow-hidden">

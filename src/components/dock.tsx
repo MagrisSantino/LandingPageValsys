@@ -54,6 +54,23 @@ function InstagramIcon({ className }: { className?: string }) {
   )
 }
 
+function FiverrIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      {/* fi arch band */}
+      <path d="M6.5 13C6.5 6.8 9 3.5 12 3.5C15 3.5 17.5 6.8 17.5 13H14.5C14.5 8.5 13.5 6.5 12 6.5C10.5 6.5 9.5 8.5 9.5 13H6.5Z"/>
+      {/* crossbar */}
+      <rect x="4" y="11.5" width="16" height="2.5"/>
+      {/* f stem */}
+      <rect x="6.5" y="11.5" width="3" height="9"/>
+      {/* i stem */}
+      <rect x="14.5" y="11.5" width="3" height="9"/>
+      {/* i dot */}
+      <rect x="13.5" y="5.5" width="5" height="4" rx="1"/>
+    </svg>
+  )
+}
+
 function UpworkIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -77,9 +94,10 @@ function UpworkIcon({ className }: { className?: string }) {
 /* ---------------------------------------------------------- */
 const dockItems = [
   { label: "TikTok", href: "https://www.tiktok.com/@valsys.software?is_from_webapp=1&sender_device=pc", icon: TikTokIcon, color: "#e8eaed" },
-  { label: "Instagram", href: "#", icon: InstagramIcon, color: "#e8eaed" },
+  { label: "Instagram", href: "https://www.instagram.com/valsys.software/", icon: InstagramIcon, color: "#e8eaed" },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/valsys-software", icon: Linkedin, color: "#e8eaed" },
-  { label: "Upwork", href: "https://www.upwork.com/agencies/2028700503822120263/", icon: UpworkIcon, color: "#e8eaed" },
+  { label: "Upwork", href: "https://www.upwork.com/agencies/2029758781855446343/", icon: UpworkIcon, color: "#e8eaed" },
+  { label: "Fiverr", href: "https://www.fiverr.com/valsys_software", icon: FiverrIcon, color: "#e8eaed" },
 ]
 
 /* ---------------------------------------------------------- */
@@ -96,10 +114,12 @@ function DockIcon({
   item,
   mouseX,
   mouseOnDock,
+  onHoverChange,
 }: {
   item: (typeof dockItems)[0]
   mouseX: MotionValue<number>
   mouseOnDock: boolean
+  onHoverChange: (info: { label: string; x: number; y: number } | null) => void
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
@@ -132,38 +152,33 @@ function DockIcon({
 
   const Icon = item.icon
 
+  const handleMouseEnter = () => {
+    setHovered(true)
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      onHoverChange({ label: item.label, x: rect.left + rect.width / 2, y: rect.top })
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setHovered(false)
+    onHoverChange(null)
+  }
+
   return (
     <motion.div
       ref={ref}
       className="relative flex items-end justify-center gpu"
       style={{ width: size, height: size }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Tooltip */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            className="pointer-events-none absolute -top-10 left-1/2 whitespace-nowrap rounded-lg bg-card/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-lg backdrop-blur-md gpu"
-            style={{ x: "-50%" }}
-            initial={{ opacity: 0, y: 8, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20, mass: 0.3 }}
-          >
-            {item.label}
-            {/* Tooltip arrow */}
-            <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-card/90" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Icon button */}
       <motion.a
         href={item.href}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex h-full w-full items-center justify-center rounded-xl bg-secondary/80 text-foreground/80 transition-colors duration-200 hover:bg-primary/15 hover:text-primary gpu"
+        className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl bg-secondary/80 text-foreground/80 transition-colors duration-200 hover:bg-primary/15 hover:text-primary gpu dock-icon-btn"
         style={{
           boxShadow: hovered
             ? "0 0 20px rgba(0,212,255,0.15), 0 0 60px rgba(0,212,255,0.05)"
@@ -193,59 +208,82 @@ function DockIcon({
 export function Dock() {
   const mouseX = useMotionValue(0)
   const [mouseOnDock, setMouseOnDock] = useState(false)
+  const [hoveredItem, setHoveredItem] = useState<{ label: string; x: number; y: number } | null>(null)
 
   return (
-    <motion.nav
-      className="fixed bottom-6 left-1/2 z-50 gpu"
-      initial={{ opacity: 0, y: 60, x: "-50%" }}
-      animate={{ opacity: 1, y: 0, x: "-50%" }}
-      transition={{ delay: 1.5, type: "spring", stiffness: 150, damping: 20, mass: 0.6 }}
-      aria-label="Social links dock"
-    >
-      <motion.div
-        className="relative flex items-end gap-2 rounded-2xl px-3 pb-2.5 pt-2.5 gpu"
-        style={{
-          background: "rgba(17, 17, 19, 0.75)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-        }}
-        onMouseMove={(e) => mouseX.set(e.clientX)}
-        onMouseEnter={() => setMouseOnDock(true)}
-        onMouseLeave={() => setMouseOnDock(false)}
+    <>
+      {/* Tooltip rendered at viewport level — not clipped by overflow:hidden */}
+      <AnimatePresence>
+        {hoveredItem && (
+          <motion.div
+            className="pointer-events-none fixed z-100 whitespace-nowrap rounded-lg bg-card/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-lg backdrop-blur-md gpu"
+            style={{ left: hoveredItem.x, top: hoveredItem.y - 44, x: "-50%" }}
+            initial={{ opacity: 0, y: 8, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20, mass: 0.3 }}
+          >
+            {hoveredItem.label}
+            <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-card/90" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.nav
+        className="fixed bottom-6 left-1/2 z-50"
+        initial={{ opacity: 0, y: 60, x: "-50%" }}
+        animate={{ opacity: 1, y: 0, x: "-50%" }}
+        transition={{ delay: 1.5, type: "spring", stiffness: 150, damping: 20, mass: 0.6 }}
+        aria-label="Social links dock"
       >
-        {/* Subtle gradient border overlay */}
-        <div
-          className="pointer-events-none absolute inset-0 rounded-2xl"
-          style={{
-            background: "linear-gradient(135deg, rgba(0,212,255,0.08), transparent 50%, rgba(124,58,237,0.08))",
-            mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            maskComposite: "exclude",
-            WebkitMaskComposite: "xor",
-            padding: "1px",
-            borderRadius: "inherit",
-          }}
-        />
-
-        {/* Ambient glow underneath */}
-        <div
-          className="pointer-events-none absolute -bottom-2 left-1/2 h-8 w-3/4 -translate-x-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(ellipse, rgba(0,212,255,0.08), transparent 70%)",
-            filter: "blur(12px)",
-          }}
-          aria-hidden="true"
-        />
-
-        {dockItems.map((item) => (
-          <DockIcon
-            key={item.label}
-            item={item}
-            mouseX={mouseX}
-            mouseOnDock={mouseOnDock}
+        <div className="dock-bar-wrapper">
+          {/* Fondo solo en light: div estático sin transform para evitar esquinas blancas de la capa de composición */}
+          <div className="dock-bar-bg" aria-hidden="true" />
+          <motion.div
+            className="dock-bar relative flex items-end gap-2 rounded-2xl px-3 pb-2.5 pt-2.5 overflow-hidden"
+            style={{
+              background: "rgba(17, 17, 19, 0.75)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+            onMouseMove={(e) => mouseX.set(e.clientX)}
+            onMouseEnter={() => setMouseOnDock(true)}
+            onMouseLeave={() => setMouseOnDock(false)}
+          >
+          {/* Subtle gradient border overlay */}
+          <div
+            className="pointer-events-none absolute inset-0 rounded-2xl"
+            style={{
+              background: "linear-gradient(135deg, rgba(0,212,255,0.08), transparent 50%, rgba(124,58,237,0.08))",
+              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              maskComposite: "exclude",
+              WebkitMaskComposite: "xor",
+              padding: "1px",
+              borderRadius: "inherit",
+            }}
           />
-        ))}
-      </motion.div>
-    </motion.nav>
+
+          {/* Ambient glow underneath */}
+          <div
+            className="pointer-events-none absolute -bottom-2 left-1/2 h-8 w-3/4 -translate-x-1/2 rounded-full"
+            style={{
+              background: "radial-gradient(ellipse, rgba(0,212,255,0.08), transparent 70%)",
+              filter: "blur(12px)",
+            }}
+            aria-hidden="true"
+          />
+
+          {dockItems.map((item) => (
+            <DockIcon
+              key={item.label}
+              item={item}
+              mouseX={mouseX}
+              mouseOnDock={mouseOnDock}
+              onHoverChange={setHoveredItem}
+            />
+          ))}
+          </motion.div>
+        </div>
+      </motion.nav>
+    </>
   )
 }

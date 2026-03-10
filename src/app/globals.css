@@ -3,6 +3,7 @@
 @import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 @custom-variant tall (@media (min-height: 800px));
 
 :root {
@@ -35,6 +36,254 @@
   --glow-purple: #7c3aed;
   --glass-bg: rgba(17, 17, 19, 0.6);
   --glass-border: rgba(255, 255, 255, 0.06);
+}
+
+/* -------------------------------------------------- */
+/*  Light mode overrides                              */
+/* -------------------------------------------------- */
+.light {
+  --background: #f4f5f7;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --secondary: #e9ebee;
+  --secondary-foreground: #111827;
+  --muted: #e9ebee;
+  --muted-foreground: #6b7280;
+  --border: #d1d5db;
+  --input: #d1d5db;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.08);
+}
+
+/* Light mode global color overrides */
+.light body {
+  background-color: #f4f5f7;
+  color: #111827;
+}
+
+.light .text-white {
+  color: #111827;
+}
+
+.light .text-neutral-300,
+.light .text-neutral-400 {
+  color: #4b5563;
+}
+
+.light .text-neutral-500 {
+  color: #6b7280;
+}
+
+.light .text-neutral-600 {
+  color: #9ca3af;
+}
+
+/* Nav */
+.light nav {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light nav .text-white {
+  color: #111827;
+}
+
+/* Language dropdown */
+.light .bg-black\/90 {
+  background-color: rgba(255, 255, 255, 0.97) !important;
+}
+
+.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Cards */
+.light .holo-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Form inputs */
+.light .mag-input {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #111827;
+}
+
+.light .mag-input::placeholder {
+  color: #9ca3af;
+}
+
+.light .mag-input:focus {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: #22d3ee;
+}
+
+/* Canvas particles */
+.light canvas#particle-canvas {
+  opacity: 0.6;
+}
+
+/* Cursor */
+.light #cursor-dot {
+  background-color: #111827;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+.light #cursor-trail {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.light body.hover-active #cursor-trail {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(34, 211, 238, 0.6);
+}
+
+.light body.hover-active #cursor-dot {
+  opacity: 0;
+}
+
+/* Scrollbar */
+.light ::-webkit-scrollbar-track {
+  background: #f4f5f7;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Dock — backdrop-filter via CSS so light mode can fully disable it */
+.dock-bar {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.light .bg-secondary\/80 {
+  background-color: rgba(230, 232, 235, 0.9) !important;
+}
+
+/* Wrapper para poner el fondo en un hermano sin transform (evita artefactos de capa en light) */
+.dock-bar-wrapper {
+  position: relative;
+}
+
+.dock-bar-bg {
+  display: none;
+}
+
+/* Light: sin barra, solo iconos redondeados flotantes */
+.light .dock-bar-wrapper {
+  /* Sin recorte ni fondo; el wrapper solo agrupa */
+}
+
+.light .dock-bar-bg {
+  display: none;
+}
+
+.light .dock-bar,
+.light .dock-bar.rounded-2xl {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  will-change: auto !important;
+}
+
+/* Iconos en light: sin rectángulo, solo el icono; fondo transparente */
+.light .dock-icon-btn {
+  isolation: isolate;
+  box-sizing: border-box;
+  border-radius: 0.75rem !important;
+  -webkit-border-radius: 0.75rem !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+.light .dock-bar .dock-icon-btn:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light .dock-bar > .pointer-events-none {
+  display: none;
+}
+
+/* rounded-full pill elements with backdrop-blur (hero badge, etc.) */
+.light .rounded-full.backdrop-blur-md {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  clip-path: inset(0 round 9999px);
+}
+
+/* Marquee / ticker bar */
+.light .bg-black\/50 {
+  background-color: rgba(220, 222, 226, 0.6) !important;
+}
+
+.light .border-white\/5 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light .text-neutral-500 {
+  color: #4b5563 !important;
+}
+
+.light .hover\:text-white:hover {
+  color: #111827 !important;
+}
+
+/* Contact section */
+.light #contact {
+  background: linear-gradient(to bottom, #eef0f4, #e4e7ec) !important;
+}
+
+.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light .bg-white\/2 {
+  background-color: transparent !important;
+}
+
+/* CTA buttons */
+/* "Start Project" → filled dark */
+.light .bg-white.text-black {
+  background-color: #111827 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* "Our Services" → ghost with visible border */
+.light .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+.light .text-white.border-white\/20,
+.light .border-white\/20.text-white {
+  color: #111827 !important;
+}
+
+.light .hover\:border-white\/40:hover {
+  border-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Footer */
+.light footer {
+  background-color: #e4e7ec !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 @theme inline {
